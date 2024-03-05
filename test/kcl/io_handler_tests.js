@@ -62,7 +62,7 @@ describe('io_handler_tests', function() {
   it('should read line', function(done) {
     ioHandler.on('line', function(line) {
       expect(line).to.equal('line1');
-      ioHandler.removeAllListeners('line');
+      // ioHandler.removeAllListeners('line');
       done();
     });
     process.stdin.emit('data', 'line1\n');
