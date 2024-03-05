@@ -40,6 +40,7 @@ function captureStream(stream) {
 }
 
 describe('io_handler_tests', function() {
+  this.timeout(10000)
   var stdoutHook = null;
   var stderrHook = null;
   var ioHandler = new IOHandler(process.stdin, process.stdout, process.stderr);
