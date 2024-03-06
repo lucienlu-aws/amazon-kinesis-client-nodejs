@@ -13,8 +13,6 @@ var sinon = require('sinon');
 var util = require('util');
 var Stream = require('stream');
 
-const { createReadStream, createWriteStream } = require("fs");
-
 var IOHandler = require('../../lib/kcl/io_handler');
 
 // Local stub to capture stdout/stderr.
@@ -46,11 +44,9 @@ describe('io_handler_tests', function() {
   this.timeout(5000);
   var stdoutHook = null;
   var stderrHook = null;
-  // Github workflows doesn't write to process.stdin for unknown reasons, so using
+  // Github workflows doesn't write to process.stdin for unknown reasons, so using a new Stream
   const readableStream = new Stream.Readable();
   readableStream._read = () => {};
-  const writableStream = new Stream.Writable();
-  var duplexStream = Stream.Duplex.from(readableStream, writableStream);
   var ioHandler = new IOHandler(readableStream, process.stdout, process.stderr);
 
   beforeEach(function() {
@@ -73,8 +69,7 @@ describe('io_handler_tests', function() {
       ioHandler.removeAllListeners('line');
       done();
     });
-      readableStream.emit('data', 'line1\n');
-    // process.stdout.emit('data', 'line1\n');
+    readableStream.emit('data', 'line1\n');
   });
 
   it('should write to stdout', function(done) {
@@ -93,12 +88,10 @@ describe('io_handler_tests', function() {
   it('should not read line after IO handler is destroyed', function(done) {
     var callback = sinon.spy();
     ioHandler.on('line', callback);
-      readableStream.emit('data', 'line1\n');
-    // process.stdout.emit('data', 'line1\n');
+    readableStream.emit('data', 'line1\n');
     expect(callback.calledOnce).to.be.equal(true);
     ioHandler.destroy();
-      readableStream.emit('data', 'line2\n');
-    // process.stdout.emit('data', 'line2\n');
+    readableStream.emit('data', 'line2\n');
     expect(callback.calledTwice).to.be.equal(false);
     ioHandler.removeListener('line', callback);
     done();
