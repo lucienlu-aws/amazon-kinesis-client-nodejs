@@ -43,7 +43,7 @@ describe('io_handler_tests', function() {
   this.timeout(5000);
   var stdoutHook = null;
   var stderrHook = null;
-  var ioHandler = new IOHandler(process.stdin, process.stdout, process.stderr);
+  var ioHandler = new IOHandler(process.stdout, process.stdout, process.stderr);
 
   beforeEach(function() {
     stdoutHook = captureStream(process.stdout);
@@ -65,8 +65,7 @@ describe('io_handler_tests', function() {
       ioHandler.removeAllListeners('line');
       done();
     });
-    process.stdin.resume();
-    process.stdin.emit('data', 'line1\n');
+    process.stdout.emit('data', 'line1\n');
   });
 
   it('should write to stdout', function(done) {
@@ -85,10 +84,10 @@ describe('io_handler_tests', function() {
   it('should not read line after IO handler is destroyed', function(done) {
     var callback = sinon.spy();
     ioHandler.on('line', callback);
-    process.stdin.emit('data', 'line1\n');
+    process.stdout.emit('data', 'line1\n');
     expect(callback.calledOnce).to.be.equal(true);
     ioHandler.destroy();
-    process.stdin.emit('data', 'line2\n');
+    process.stdout.emit('data', 'line2\n');
     expect(callback.calledTwice).to.be.equal(false);
     ioHandler.removeListener('line', callback);
     done();
