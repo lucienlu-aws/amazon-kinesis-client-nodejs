@@ -46,11 +46,12 @@ describe('io_handler_tests', function() {
   this.timeout(5000);
   var stdoutHook = null;
   var stderrHook = null;
+  // Github workflows doesn't write to process.stdin for unknown reasons, so using
   const readableStream = new Stream.Readable();
   readableStream._read = () => {};
   const writableStream = new Stream.Writable();
   var duplexStream = Stream.Duplex.from(readableStream, writableStream);
-  var ioHandler = new IOHandler(duplexStream, process.stdout, process.stderr);
+  var ioHandler = new IOHandler(readableStream, process.stdout, process.stderr);
 
   beforeEach(function() {
     stdoutHook = captureStream(process.stdout);
@@ -72,7 +73,7 @@ describe('io_handler_tests', function() {
       ioHandler.removeAllListeners('line');
       done();
     });
-    duplexStream.emit('data', 'line1\n');
+      readableStream.emit('data', 'line1\n');
     // process.stdout.emit('data', 'line1\n');
   });
 
@@ -92,11 +93,11 @@ describe('io_handler_tests', function() {
   it('should not read line after IO handler is destroyed', function(done) {
     var callback = sinon.spy();
     ioHandler.on('line', callback);
-    duplexStream.emit('data', 'line1\n');
+      readableStream.emit('data', 'line1\n');
     // process.stdout.emit('data', 'line1\n');
     expect(callback.calledOnce).to.be.equal(true);
     ioHandler.destroy();
-    duplexStream.emit('data', 'line2\n');
+      readableStream.emit('data', 'line2\n');
     // process.stdout.emit('data', 'line2\n');
     expect(callback.calledTwice).to.be.equal(false);
     ioHandler.removeListener('line', callback);
