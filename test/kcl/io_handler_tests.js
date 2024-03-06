@@ -40,7 +40,7 @@ function captureStream(stream) {
 }
 
 describe('io_handler_tests', function() {
-  this.timeout(30000);
+  this.timeout(5000);
   var stdoutHook = null;
   var stderrHook = null;
   var ioHandler = new IOHandler(process.stdin, process.stdout, process.stderr);
@@ -65,6 +65,7 @@ describe('io_handler_tests', function() {
       ioHandler.removeAllListeners('line');
       done();
     });
+    process.stdin.resume();
     process.stdin.emit('data', 'line1\n');
   });
 
