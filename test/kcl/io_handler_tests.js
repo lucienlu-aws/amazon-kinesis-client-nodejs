@@ -46,7 +46,7 @@ describe('io_handler_tests', function() {
   var stderrHook = null;
   // Github workflows doesn't write to process.stdin for unknown reasons, so using a new Stream
   const readableStream = new Stream.Readable();
-  readableStream._read = () => {};
+  readableStream._read = () => {}; // _read is required but can noop it
   var ioHandler = new IOHandler(readableStream, process.stdout, process.stderr);
 
   beforeEach(function() {
