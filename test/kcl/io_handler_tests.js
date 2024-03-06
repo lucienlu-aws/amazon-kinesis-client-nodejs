@@ -46,7 +46,7 @@ describe('io_handler_tests', function() {
   this.timeout(5000);
   var stdoutHook = null;
   var stderrHook = null;
-  var duplexStream = Stream.Duplex.from(process.stdin);
+  var duplexStream = Stream.Duplex.from(process.stdout);
   var ioHandler = new IOHandler(duplexStream, process.stdout, process.stderr);
 
   beforeEach(function() {
